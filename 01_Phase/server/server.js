@@ -12,11 +12,11 @@ app.use(express.json());
 app.get("/",(req,res) => {
     res.send("API IS RUNNING....")
 })
-app.listen(5000,() => {
+app.listen(process.env.PORT,() => {
     console.log("Server running on port 5000");
 })
 
-mongoose.connect("mongodb+srv://User123:jUoPa6IGCQvadYex@clustermain.lpy6jrt.mongodb.net/taskmanager?retryWrites=true&w=majority&appName=ClusterMain")
+mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDb Connected"))
 .catch((e) => console.error("Error while connecting " , e))
 
