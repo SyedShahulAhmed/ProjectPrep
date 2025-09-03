@@ -1,33 +1,56 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useEffect } from "react";
 
 const TaskList = () => {
-  const [tasks, setTasks] = useState([
-    { text: "Code", completed: true },
-    { text: "Read", completed: false },
-    { text: "Sleep", completed: false },
-  ]);
+  const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState("");
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5000/tasks")
+      .then((res) => setTasks(res.data))
+      .catch((e) => console.error(e));
+  }, []);
 
   const addTask = () => {
     if (!task.trim()) return;
-    setTasks((e) => [...e, { text: task, completed: false }]);
-    setTask("");
+    axios
+      .post("http://localhost:5000/tasks", { text: task })
+      .then((res) => {
+        setTasks((p) => [...p, res.data]);
+        setTask("");
+      })
+      .catch((e) => console.error(e));
   };
-  const toggleTask = (id) => {
-    setTasks((t) =>
-      t.map((e, idx) => (idx == id ? { ...e, completed: !e.completed } : e))
-    );
+  const toggleTask = (id, completed, text) => {
+    axios
+      .put(`http://localhost:5000/tasks/${id}`, { text, completed: !completed })
+      .then((res) => {
+        setTasks((p) => p.map((t) => (t._id === id ? res.data : t)));
+      })
+      .catch((e) => console.error(e));
   };
   const deleteTask = (id) => {
-    setTasks((p) => p.filter((_, idx) => idx != id));
+    axios
+      .delete(`http://localhost:5000/tasks/${id}`)
+      .then(() => {
+        setTasks((p) => p.filter((t) => t._id !== id));
+      })
+      .catch((e) => console.error(e));
   };
-  const UpdateTask = (id) =>{
-    const newTask = prompt("Enter Update Task :- ",tasks[id].text);
-    if(!newTask || !newTask.trim()) return;
-    setTasks((p) => 
-    p.map((t,idx) => idx === id ? {...t,text:newTask} : t)
-    )
-  }
+  const UpdateTask = (id,completed,currText) => {
+    const newTask = prompt("Enter Update Task :- ", currText);
+    if (!newTask || !newTask.trim()) return;
+    axios.put(`http://localhost:5000/tasks/${id}`, { text: newTask, completed})
+    .then((res) => {
+      setTasks((p) => 
+      p.map((t) => (t._id === id ? res.data : t))
+      );
+    })
+    .catch((e) => console.error(e))
+
+  };
   return (
     <div>
       <div className="flex mb-4">
@@ -46,22 +69,22 @@ const TaskList = () => {
         </button>
       </div>
       <ul className="space-y-2">
-        {tasks.map((t, id) => (
+        {tasks.map((t) => (
           <li
-            key={id}
+            key={t._id}
             className={`bg-gray-100 border border-gray-300 rounded-md px-3 py-2 shadow-sm flex justify-between items-center ${
               t.completed ? "line-through text-gray-500" : "text-black"
             }`}
           >
             <span
-              onClick={() => toggleTask(id)}
+              onClick={() => toggleTask(t._id,t.completed,t.text)}
               className="cursor-pointer flex-1"
             >
               {t.text}
             </span>
             <span className="mr-2.5">
               <button
-                onClick={() => UpdateTask(id)}
+                onClick={() => UpdateTask(t._id,t.completed,t.text)}
                 className="text-green-500 hover:text-green-700 font-medium border rounded p-1"
               >
                 Update
@@ -69,7 +92,7 @@ const TaskList = () => {
             </span>
             <span>
               <button
-                onClick={() => deleteTask(id)}
+                onClick={() => deleteTask(t._id)}
                 className="text-red-500 hover:text-red-700 font-medium border rounded p-1"
               >
                 Del
