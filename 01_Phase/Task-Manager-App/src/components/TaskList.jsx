@@ -1,22 +1,24 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useEffect } from "react";
+import api from "../api/axios";
+import LogoutButton from "./Logout";
 
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/tasks")
+    api
+      .get("/tasks")
       .then((res) => setTasks(res.data))
       .catch((e) => console.error(e));
   }, []);
 
   const addTask = () => {
     if (!task.trim()) return;
-    axios
-      .post("http://localhost:5000/tasks", { text: task })
+    api
+      .post("/tasks", { text: task })
       .then((res) => {
         setTasks((p) => [...p, res.data]);
         setTask("");
@@ -24,16 +26,16 @@ const TaskList = () => {
       .catch((e) => console.error(e));
   };
   const toggleTask = (id, completed, text) => {
-    axios
-      .put(`http://localhost:5000/tasks/${id}`, { text, completed: !completed })
+    api
+      .put(`/tasks/${id}`, { text, completed: !completed })
       .then((res) => {
         setTasks((p) => p.map((t) => (t._id === id ? res.data : t)));
       })
       .catch((e) => console.error(e));
   };
   const deleteTask = (id) => {
-    axios
-      .delete(`http://localhost:5000/tasks/${id}`)
+    api
+      .delete(`/tasks/${id}`)
       .then(() => {
         setTasks((p) => p.filter((t) => t._id !== id));
       })
@@ -42,7 +44,7 @@ const TaskList = () => {
   const UpdateTask = (id,completed,currText) => {
     const newTask = prompt("Enter Update Task :- ", currText);
     if (!newTask || !newTask.trim()) return;
-    axios.put(`http://localhost:5000/tasks/${id}`, { text: newTask, completed})
+    api.put(`/tasks/${id}`, { text: newTask, completed})
     .then((res) => {
       setTasks((p) => 
       p.map((t) => (t._id === id ? res.data : t))
@@ -101,6 +103,7 @@ const TaskList = () => {
           </li>
         ))}
       </ul>
+      <LogoutButton/>
     </div>
   );
 };
