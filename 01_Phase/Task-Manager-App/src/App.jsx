@@ -1,4 +1,8 @@
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import TaskList from "./components/TaskList";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -7,7 +11,15 @@ function App() {
         <h1 className="text-2xl font-bold text-center italic text-yellow-300 mb-4">
           Task Manager
         </h1>
-        <TaskList />
+        <BrowserRouter>
+        <Routes>
+          <Route path = "/login" element = {<Login/>} />
+          <Route path="/register" element = {<Register/> }/>
+          <Route element = {<ProtectedRoute/>}>
+          <Route path="/" element = {<TaskList/>}/>
+          </Route>
+        </Routes>
+        </BrowserRouter>
       </div>
     </div>
   );
