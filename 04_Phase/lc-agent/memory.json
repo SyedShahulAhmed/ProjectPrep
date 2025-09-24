@@ -1,0 +1,12 @@
+[
+  {
+    "ts": 1757684563789,
+    "user": "Please fetch https://quotes.toscrape.com/js/ and give me 6 concise bullet points. Then remember this for later.",
+    "assistant": "Here are 6 concise bullet points from the page:\n*   \"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\" - Albert Einstein\n*   \"It is our choices, Harry, that show what we truly are, far more than our abilities.\" - J.K. Rowling\n*   \"There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.\" - Albert Einstein\n*   \"The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.\" - Jane Austen\n*   \"Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.\" - Marilyn Monroe\n*   \"Try not to become a man of success. Rather become a man of value.\" - Albert Einstein"
+  },
+  {
+    "ts": 1757685184543,
+    "user": "Please fetch https://quotes.toscrape.com/js/ and give me 6 concise bullet points; use any relevant memory.",
+    "assistant": "Here are 6 concise bullet points from the page:\n*   \"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\" - Albert Einstein\n*   \"It is our choices, Harry, that show what we truly are, far more than our abilities.\" - J.K. Rowling\n*   \"There are only two ways to live your life. One is as though nothing is a miracle. The other is as though everything is a miracle.\" - Albert Einstein\n*   \"The person, be it gentleman or lady, who has not pleasure in a good novel, must be intolerably stupid.\" - Jane Austen\n*   \"Imperfection is beauty, madness is genius and it's better to be absolutely ridiculous than absolutely boring.\" - Marilyn Monroe\n*   \"Try not to become a man of success. Rather become a man of value.\" - Albert Einstein"
+  }
+]
