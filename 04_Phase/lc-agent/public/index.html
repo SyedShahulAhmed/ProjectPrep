@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>LeetCode AI Dashboard</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      :root {
+        --bg: #0f1724;
+        --panel: #0b1220;
+        --muted: #9aa4b2;
+        --accent: #6ee7b7;
+        --accent-2: #7c3aed;
+        --card: #0b1220;
+        --glass: rgba(255, 255, 255, 0.03);
+        --radius: 12px;
+        --shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
+        --glass-border: rgba(255, 255, 255, 0.04);
+        --text: #e6eef8;
+        --green: #10b981;
+        --yellow: #f59e0b;
+        --red: #ef4444;
+        --blue: #60a5fa;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        min-height: 100%;
+        font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial;
+        background: linear-gradient(180deg, #071022 0%, #071827 60%);
+        color: var(--text);
+        padding: 24px;
+        box-sizing: border-box;
+      }
+      .wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      header .title {
+        line-height: 1;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 22px;
+      }
+      header p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .controls {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin: 14px 0;
+      }
+      .controls input {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        padding: 10px 12px;
+        border-radius: 10px;
+        color: var(--text);
+        width: 320px;
+        outline: none;
+      }
+      .controls button {
+        background: linear-gradient(90deg, var(--accent-2), #0ea5e9);
+        border: 0;
+        padding: 10px 14px;
+        border-radius: 10px;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .row {
+        display: flex;
+        gap: 16px;
+        align-items: stretch;
+        margin-bottom: 16px;
+      }
+      .col {
+        flex: 1;
+      }
+
+      .card {
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        padding: 16px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+      }
+
+      /* top stat cards */
+      .stats {
+        display: flex;
+        gap: 12px;
+      }
+      .stat {
+        flex: 1;
+        padding: 14px;
+        border-radius: 12px;
+        background: linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.02),
+          rgba(255, 255, 255, 0.01)
+        );
+      }
+      .stat h4 {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .stat .value {
+        font-size: 22px;
+        margin-top: 6px;
+        color: var(--text);
+        font-weight: 700;
+      }
+      .stat .delta {
+        font-size: 12px;
+        color: var(--accent);
+        margin-top: 6px;
+      }
+
+      /* problem distribution */
+      .dist-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .bar-wrap {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 999px;
+        height: 12px;
+        overflow: hidden;
+      }
+      .bar {
+        height: 100%;
+        border-radius: 999px;
+      }
+
+      .section-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .section-title h3 {
+        margin: 0;
+        font-size: 14px;
+      }
+
+      /* detail cards for sections */
+      .section-card {
+        margin-bottom: 12px;
+        padding: 12px;
+        border-radius: 10px;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.015),
+          rgba(255, 255, 255, 0.01)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.025);
+      }
+      .section-card h4 {
+        margin: 0 0 8px 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .section-card ul {
+        padding-left: 16px;
+        margin: 0;
+      }
+      .section-card li {
+        margin: 6px 0;
+        color: var(--text);
+      }
+
+      /* topic mastery (placeholder) */
+      .topic {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 8px 0;
+      }
+      .topic .tname {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .topic .progress {
+        height: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 6px;
+        overflow: hidden;
+        width: 60%;
+      }
+      .topic .progress > i {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      }
+      .small {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      @media (max-width: 900px) {
+        .row {
+          flex-direction: column;
+        }
+        .stats {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="title">
+          <h1>LeetCode Analytics — AI Summary</h1>
+          <p>Profile summary, problem distribution and study plan.</p>
+        </div>
+        <div class="small">Local demo • Keep API key on server</div>
+      </header>
+
+      <div class="controls">
+        <input
+          id="username"
+          placeholder="Enter LeetCode username (e.g. ShahulAhmed)"
+          value="ShahulAhmed"
+        />
+        <button id="go">Generate</button>
+        <div id="status" class="small" style="margin-left: 10px"></div>
+      </div>
+
+      <!-- Top stats -->
+      <div class="row">
+        <div class="col">
+          <div class="stats">
+            <div class="stat card">
+              <h4>Problems Solved</h4>
+              <div id="totalSolved" class="value">—</div>
+              <div id="solvedBreak" class="small">Easy / Medium / Hard</div>
+            </div>
+            <div class="stat card">
+              <h4>Easy</h4>
+              <div id="easyCount" class="value">—</div>
+              <div id="easyPct" class="small">—</div>
+            </div>
+            <div class="stat card">
+              <h4>Medium</h4>
+              <div id="mediumCount" class="value">—</div>
+              <div id="mediumPct" class="small">—</div>
+            </div>
+            <div class="stat card">
+              <h4>Hard</h4>
+              <div id="hardCount" class="value">—</div>
+              <div id="hardPct" class="small">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside style="width: 360px">
+        <div class="card">
+          <h4 style="margin-top: 0; color: var(--muted)">
+            Streak & Quick Stats
+          </h4>
+          <div style="display: flex; gap: 10px; margin-top: 8px">
+            <div style="flex: 1">
+              <div class="small">Current Streak</div>
+              <div
+                id="streakVal"
+                style="font-size: 20px; font-weight: 700; margin-top: 6px"
+              >
+                —
+              </div>
+            </div>
+            <div style="flex: 1">
+              <div class="small">Star Rating</div>
+              <div
+                id="starVal"
+                style="font-size: 20px; font-weight: 700; margin-top: 6px"
+              >
+                —
+              </div>
+            </div>
+          </div>
+          <div style="height: 10px"></div>
+          <div class="small">Top Languages</div>
+          <div id="languagesList" style="margin-top: 8px">
+            <div class="small">—</div>
+          </div>
+
+          <div style="height: 12px"></div>
+          <div class="small">Skill / Topic Strength (inferred)</div>
+          <div id="skillsList" style="margin-top: 10px">
+            <!-- placeholder topics -->
+            <div class="topic">
+              <div class="tname">Arrays</div>
+              <div class="progress"><i style="width: 50%"></i></div>
+            </div>
+            <div class="topic">
+              <div class="tname">Dynamic Programming</div>
+              <div class="progress"><i style="width: 30%"></i></div>
+            </div>
+            <div class="topic">
+              <div class="tname">Trees/Graphs</div>
+              <div class="progress"><i style="width: 45%"></i></div>
+            </div>
+          </div>
+
+          <div style="height: 8px"></div>
+          <div style="display: flex; gap: 8px; margin-top: 12px">
+            <button id="copyMd" class="small secondary">Copy Markdown</button>
+            <button id="download" class="small secondary">Download</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- main content -->
+      <div class="row">
+        <div class="col" style="min-width: 0">
+          <div class="card">
+            <div class="section-title">
+              <h3>Problem Distribution</h3>
+              <div class="small" id="distNote"></div>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                margin-bottom: 12px;
+              "
+            >
+              <div class="dist-row">
+                <div style="width: 90px; color: var(--muted)">Easy</div>
+                <div class="bar-wrap">
+                  <div
+                    id="barEasy"
+                    class="bar"
+                    style="
+                      width: 0%;
+                      background: linear-gradient(90deg, var(--green), #2dd4bf);
+                    "
+                  ></div>
+                </div>
+                <div style="width: 70px; text-align: right" id="easyLabel">
+                  0
+                </div>
+              </div>
+
+              <div class="dist-row">
+                <div style="width: 90px; color: var(--muted)">Medium</div>
+                <div class="bar-wrap">
+                  <div
+                    id="barMed"
+                    class="bar"
+                    style="
+                      width: 0%;
+                      background: linear-gradient(
+                        90deg,
+                        var(--yellow),
+                        #f59e0b
+                      );
+                    "
+                  ></div>
+                </div>
+                <div style="width: 70px; text-align: right" id="medLabel">
+                  0
+                </div>
+              </div>
+
+              <div class="dist-row">
+                <div style="width: 90px; color: var(--muted)">Hard</div>
+                <div class="bar-wrap">
+                  <div
+                    id="barHard"
+                    class="bar"
+                    style="
+                      width: 0%;
+                      background: linear-gradient(90deg, var(--red), #ef4444);
+                    "
+                  ></div>
+                </div>
+                <div style="width: 70px; text-align: right" id="hardLabel">
+                  0
+                </div>
+              </div>
+            </div>
+
+            <div
+              style="
+                display: flex;
+                gap: 12px;
+                align-items: center;
+                justify-content: space-between;
+              "
+            >
+              <div class="small">
+                Source: parsed from profile (promptPreview). For better
+                accuracy, send stats from the backend.
+              </div>
+              <div class="actions">
+                <button id="refresh" class="small secondary">Refresh</button>
+              </div>
+            </div>
+          </div>
+
+          <div style="height: 12px"></div>
+
+          <!-- Sections -->
+          <div class="section-card card">
+            <h4>SUMMARY</h4>
+            <div
+              id="summaryContent"
+              class="small"
+              style="white-space: pre-wrap"
+            >
+              No summary yet.
+            </div>
+          </div>
+
+          <div class="section-card card">
+            <h4>NOTABLE SOLVED</h4>
+            <div id="notableContent" class="small">Not available</div>
+          </div>
+
+          <div class="section-card card">
+            <h4>RECOMMENDATIONS</h4>
+            <div id="recContent" class="small">No recommendations yet.</div>
+          </div>
+
+          <div class="section-card card">
+            <h4>STUDY PLAN</h4>
+            <div id="planContent" class="small">No plan yet.</div>
+          </div>
+        </div>
+
+        <aside style="width: 360px">
+          <div class="card">
+            <h4 style="margin-top: 0; color: var(--muted)">
+              Topic Mastery (inferred)
+            </h4>
+            <div id="topicsList">
+              <!-- placeholder topics -->
+              <div class="topic">
+                <div class="tname">Arrays</div>
+                <div class="progress"><i style="width: 70%"></i></div>
+              </div>
+              <div class="topic">
+                <div class="tname">Dynamic Programming</div>
+                <div class="progress"><i style="width: 40%"></i></div>
+              </div>
+              <div class="topic">
+                <div class="tname">Trees/Graphs</div>
+                <div class="progress"><i style="width: 55%"></i></div>
+              </div>
+              <div class="topic">
+                <div class="tname">Hash Tables</div>
+                <div class="progress"><i style="width: 60%"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <div style="height: 12px"></div>
+
+          <div class="card">
+            <h4 style="margin-top: 0; color: var(--muted)">Quick Info</h4>
+            <div class="small" id="badgesInfo">Badges: —</div>
+            <div style="height: 8px"></div>
+            <div
+              class="small"
+              id="promptPreviewSmall"
+              style="white-space: pre-wrap; max-height: 220px; overflow: auto"
+            ></div>
+            <div style="height: 8px"></div>
+            <div style="display: flex; gap: 8px">
+              <button id="copyMd" class="small secondary">Copy Markdown</button>
+              <button id="download" class="small secondary">Download</button>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <footer style="text-align: center; color: var(--muted); margin-top: 6px">
+        Tip: For richer UI (clickable problem links) update backend to return
+        `recentAcSubmissionList` with `titleSlug`.
+      </footer>
+    </div>
+
+    <script>
+      // helpers to parse solved counts from promptPreview text
+      // REPLACE existing parseCounts with this
+      function parseCounts(prompt) {
+        const res = {
+          all: 0,
+          easy: 0,
+          medium: 0,
+          hard: 0,
+          totalAll: 0,
+          totalEasy: 0,
+          totalMedium: 0,
+          totalHard: 0,
+          badges: "",
+        };
+        if (!prompt) return res;
+
+        const lines = prompt.split(/\r?\n/).map((s) => s.trim());
+
+        // helper: given index of header line, parse subsequent "- X: N" lines
+        function parseBlock(startIndex) {
+          const out = {};
+          for (let i = startIndex + 1; i < lines.length; i++) {
+            const l = lines[i];
+            if (!l) break; // stop on empty line
+            const m = l.match(/^-?\s*(All|Easy|Medium|Hard)\s*:\s*([0-9]+)/i);
+            if (m) {
+              out[m[1].toLowerCase()] = parseInt(m[2], 10);
+            } else {
+              break; // stop when block ends
+            }
+          }
+          return out;
+        }
+
+        // find "Solved counts by difficulty"
+        const solvedIdx = lines.findIndex((l) =>
+          /^Solved counts by difficulty/i.test(l)
+        );
+        if (solvedIdx !== -1) {
+          const b = parseBlock(solvedIdx);
+          res.all = b.all || 0;
+          res.easy = b.easy || 0;
+          res.medium = b.medium || 0;
+          res.hard = b.hard || 0;
+        } else {
+          // fallback: scan first occurrence group of All/Easy/Medium/Hard (best-effort)
+          for (const l of lines) {
+            const m = l.match(/^-?\s*(All|Easy|Medium|Hard)\s*:\s*([0-9]+)/i);
+            if (m) {
+              res[m[1].toLowerCase()] = parseInt(m[2], 10);
+            }
+          }
+        }
+
+        // find "Total problems in database by difficulty"
+        const totalIdx = lines.findIndex((l) =>
+          /^Total problems in database by difficulty/i.test(l)
+        );
+        if (totalIdx !== -1) {
+          const tb = parseBlock(totalIdx);
+          res.totalAll = tb.all || 0;
+          res.totalEasy = tb.easy || 0;
+          res.totalMedium = tb.medium || 0;
+          res.totalHard = tb.hard || 0;
+        }
+
+        // badges line if present
+        const badgeLine = lines.find((l) => /^Badges:/i.test(l));
+        if (badgeLine)
+          res.badges = badgeLine.replace(/^Badges:\s*/i, "").trim();
+
+        // safety: if res.all is still 0, compute from components
+        if (!res.all)
+          res.all = (res.easy || 0) + (res.medium || 0) + (res.hard || 0);
+
+        return res;
+      }
+
+      // render helpers
+      function setStat(id, value, pctText) {
+        document.getElementById(id).innerText = value || "—";
+        if (pctText) {
+          document.getElementById(id.replace("Count", "Pct") || id).innerText =
+            pctText;
+        }
+      }
+
+      // REPLACE existing updateDistributionFromPrompt with this
+      function updateDistributionFromPrompt(prompt) {
+        const counts = parseCounts(prompt);
+
+        // If DB totals exist use them for percentages; otherwise use user's sum as fallback
+        const dbTotal =
+          counts.totalAll ||
+          counts.all ||
+          counts.easy + counts.medium + counts.hard ||
+          1;
+        const userTotal =
+          counts.all || counts.easy + counts.medium + counts.hard;
+
+        // percentages relative to DB
+        const pEasy = Math.round(((counts.easy || 0) / dbTotal) * 100);
+        const pMed = Math.round(((counts.medium || 0) / dbTotal) * 100);
+        const pHard = Math.round(((counts.hard || 0) / dbTotal) * 100);
+
+        // update UI values
+        document.getElementById("totalSolved").innerText = userTotal || "—";
+        document.getElementById("solvedBreak").innerText = `${
+          counts.easy || 0
+        } / ${counts.medium || 0} / ${counts.hard || 0}`;
+
+        document.getElementById("easyCount").innerText = counts.easy || 0;
+        document.getElementById("mediumCount").innerText = counts.medium || 0;
+        document.getElementById("hardCount").innerText = counts.hard || 0;
+
+        document.getElementById("easyPct").innerText = (pEasy || 0) + "% of DB";
+        document.getElementById("mediumPct").innerText =
+          (pMed || 0) + "% of DB";
+        document.getElementById("hardPct").innerText = (pHard || 0) + "% of DB";
+
+        // bar widths (clamp to visible min)
+        document.getElementById("barEasy").style.width =
+          Math.min(100, Math.max(3, pEasy)) + "%";
+        document.getElementById("barMed").style.width =
+          Math.min(100, Math.max(3, pMed)) + "%";
+        document.getElementById("barHard").style.width =
+          Math.min(100, Math.max(3, pHard)) + "%";
+
+        // labels show "solved / total"
+        document.getElementById("easyLabel").innerText =
+          (counts.easy || 0) +
+          (counts.totalEasy ? " / " + counts.totalEasy : "");
+        document.getElementById("medLabel").innerText =
+          (counts.medium || 0) +
+          (counts.totalMedium ? " / " + counts.totalMedium : "");
+        document.getElementById("hardLabel").innerText =
+          (counts.hard || 0) +
+          (counts.totalHard ? " / " + counts.totalHard : "");
+
+        document.getElementById("badgesInfo").innerText =
+          "Badges: " + (counts.badges || "—");
+        document.getElementById("promptPreviewSmall").innerText = (
+          prompt || ""
+        ).slice(0, 2000);
+      }
+
+      // ---------- Helpers to populate streak, languages, and skills ----------
+
+      // Heuristic: detect streak from badges line like "200 Days Badge 2025" or "100 Days Badge 2025"
+      function inferStreakFromBadges(badgeStr) {
+        if (!badgeStr) return null;
+        // finds the largest number before "Days Badge"
+        const match = Array.from(
+          badgeStr.matchAll(/(\d{1,4})\s*Days\s*Badge/gi)
+        ).map((m) => parseInt(m[1], 10));
+        if (match.length) return Math.max(...match);
+        // other heuristics: 'streak' or 'days' words
+        const daysMatch = badgeStr.match(/(\d{1,4})\s*days?/i);
+        if (daysMatch) return parseInt(daysMatch[1], 10);
+        return null;
+      }
+
+      // Render top languages (expects array like [{lang:'Python',count:12},...]) or fallback string
+      function renderTopLanguages(elId, langs) {
+        const el = document.getElementById(elId);
+        if (!langs) {
+          el.innerHTML = '<div class="small">—</div>';
+          return;
+        }
+        if (Array.isArray(langs) && langs.length) {
+          el.innerHTML = langs
+            .slice(0, 5)
+            .map(
+              (l) =>
+                `<div style="display:flex;justify-content:space-between;margin:6px 0"><div class="small">${escapeHtml(
+                  l.lang
+                )}</div><div class="small">${l.count || ""}</div></div>`
+            )
+            .join("");
+        } else if (typeof langs === "string") {
+          el.innerHTML = `<div class="small">${escapeHtml(langs)}</div>`;
+        } else {
+          el.innerHTML = '<div class="small">—</div>';
+        }
+      }
+
+      // Render topics / skills (expects array like [{topic:'DP',pct:60},...]) or fallback from starRating
+      function renderSkills(elId, topics, starRating, counts) {
+        const el = document.getElementById(elId);
+        if (Array.isArray(topics) && topics.length) {
+          el.innerHTML = topics
+            .map(
+              (t) =>
+                `<div class="topic"><div class="tname">${escapeHtml(
+                  t.topic
+                )}</div><div class="progress"><i style="width:${Math.max(
+                  8,
+                  Math.min(100, t.pct || 30)
+                )}%"></i></div></div>`
+            )
+            .join("");
+          return;
+        }
+        // fallback heuristic: create topics by difficulty share
+        const easy = counts?.easy || 0,
+          med = counts?.medium || 0,
+          hard = counts?.hard || 0;
+        const total = Math.max(1, easy + med + hard);
+        const topicsAuto = [
+          { topic: "Arrays", pct: Math.round((easy / total) * 80 + 20) },
+          {
+            topic: "Dynamic Programming",
+            pct: Math.round((med / total) * 60 + 10),
+          },
+          {
+            topic: "Graphs/Trees",
+            pct: Math.round((med / total + hard / total) * 40 + 10),
+          },
+        ];
+        el.innerHTML = topicsAuto
+          .map(
+            (t) =>
+              `<div class="topic"><div class="tname">${escapeHtml(
+                t.topic
+              )}</div><div class="progress"><i style="width:${
+                t.pct
+              }%"></i></div></div>`
+          )
+          .join("");
+      }
+
+      // High-level: call this once you have backend JSON result (json)
+      function populateMetaFromBackend(json) {
+        // json may include json.meta (recommended by backend)
+        const meta = json.meta || {};
+
+        // 1) Streak: try meta.streak, then badges inference from promptPreview
+        let streak = meta.streak || null;
+        if (!streak) {
+          const badgeStr = (json.promptPreview || "")
+            .split(/\n/)
+            .find((l) => /^Badges:/i.test(l));
+          const badgeVal = badgeStr
+            ? badgeStr.replace(/^Badges:\s*/i, "")
+            : meta.badges || "";
+          streak = inferStreakFromBadges(badgeVal);
+        }
+        document.getElementById("streakVal").innerText = streak
+          ? streak + " days"
+          : "—";
+
+        // 2) Star rating from meta or try to parse promptPreview
+        const star =
+          meta.starRating ||
+          (json.sections && json.sections.PROMPT_STAR) ||
+          null;
+        // try to parse "Star rating: 2.5" in prompt preview
+        if (!star) {
+          const m = (json.promptPreview || "").match(
+            /Star rating:\s*([0-9]+(?:\.[0-9]+)?)/i
+          );
+          if (m) document.getElementById("starVal").innerText = m[1];
+          else
+            document.getElementById("starVal").innerText =
+              meta.starRating || "—";
+        } else {
+          document.getElementById("starVal").innerText = star;
+        }
+
+        // 3) Top languages - prefer meta.topLanguages then meta.recentLanguages
+        if (meta.topLanguages)
+          renderTopLanguages("languagesList", meta.topLanguages);
+        else if (meta.recentLanguages)
+          renderTopLanguages("languagesList", meta.recentLanguages);
+        else
+          renderTopLanguages(
+            "languagesList",
+            meta.languageHint || "Not available"
+          );
+
+        // 4) Skills / topics — prefer meta.topics otherwise fallback using counts
+        if (meta.topics)
+          renderSkills("skillsList", meta.topics, meta.starRating, meta.counts);
+        else {
+          // build counts from promptPreview to pass as fallback
+          const counts = parseCounts(json.promptPreview || "");
+          renderSkills("skillsList", null, meta.starRating, counts);
+        }
+      }
+
+      // fetch + render pipeline (calls backend)
+      async function fetchAndRender(username) {
+        // UI
+        document.getElementById("status").innerHTML = "Loading…";
+        document.getElementById("summaryContent").innerText = "Loading…";
+        document.getElementById("notableContent").innerText = "Loading…";
+        document.getElementById("recContent").innerText = "Loading…";
+        document.getElementById("planContent").innerText = "Loading…";
+
+        try {
+          const resp = await fetch(
+            `/api/summary?username=${encodeURIComponent(username)}`
+          );
+          const text = await resp.text();
+          let json;
+          try {
+            json = JSON.parse(text);
+          } catch (e) {
+            document.getElementById("summaryContent").innerText =
+              "Server returned non-JSON response";
+            console.error("raw:", text);
+            return;
+          }
+          if (!json.ok) {
+            document.getElementById("summaryContent").innerText =
+              "Error: " + (json.error || "unknown");
+            return;
+          }
+          const s = json.sections || {};
+
+          // populate cards: using simple line splitting into bullets
+          function fillEl(elId, content) {
+            if (!content) {
+              document.getElementById(elId).innerText = "—";
+              return;
+            }
+            // if multiple lines, keep them
+            document.getElementById(elId).innerText = content;
+          }
+
+          fillEl("summaryContent", s.SUMMARY);
+          fillEl("notableContent", s.NOTABLE_SOLVED);
+          fillEl("recContent", s.RECOMMENDATIONS);
+          fillEl("planContent", s.STUDY_PLAN);
+
+          // parse promptPreview for counts
+          updateDistributionFromPrompt(json.promptPreview || "");
+        } catch (err) {
+          document.getElementById("summaryContent").innerText =
+            "Network error: " + (err.message || err);
+          console.error(err);
+        } finally {
+          document.getElementById("status").innerText = "";
+        }
+      }
+
+      document.getElementById("go").addEventListener("click", () => {
+        const u = document.getElementById("username").value.trim();
+        if (!u) return alert("Enter username");
+        fetchAndRender(u);
+      });
+
+      document.getElementById("refresh").addEventListener("click", () => {
+        const u = document.getElementById("username").value.trim();
+        if (u) fetchAndRender(u);
+      });
+
+      // copy/download helpers
+      document.getElementById("copyMd").addEventListener("click", () => {
+        const md = `# ${
+          document.getElementById("username").value
+        }\n\n## Summary\n\n${
+          document.getElementById("summaryContent").innerText
+        }\n\n## Recommendations\n\n${
+          document.getElementById("recContent").innerText
+        }`;
+        navigator.clipboard.writeText(md).then(() => alert("Copied"));
+      });
+      document.getElementById("download").addEventListener("click", () => {
+        const md = `# ${
+          document.getElementById("username").value
+        }\n\n## Summary\n\n${
+          document.getElementById("summaryContent").innerText
+        }\n\n## Recommendations\n\n${
+          document.getElementById("recContent").innerText
+        }`;
+        const blob = new Blob([md], { type: "text/markdown" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download =
+          (document.getElementById("username").value || "report") + ".md";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      // run initial
+      fetchAndRender(
+        document.getElementById("username").value.trim() || "ShahulAhmed"
+      );
+    </script>
+  </body>
+</html>
