@@ -1,0 +1,61 @@
+Great question 🙌 — we mapped out your **Phase 2: Authentication & APIs** like a little adventure game 🎮.
+
+Here’s the full roadmap of levels for this phase:
+
+---
+
+## 🗺️ Levels in Phase 2
+
+### ✅ Level 1 — *The Gatekeeper* 🛡️
+
+* Build backend signup & login with JWT.
+* Add auth middleware to protect routes.
+* Test everything in Postman.
+  *(you just cleared this 🎉)*
+
+---
+
+### 🟦 Level 2 — *The Frontline (React Auth)* ⚔️
+
+* Setup **AuthContext** in React to store JWT.
+* Add **Login & Signup forms** that connect to backend.
+* Create **ProtectedRoute** so only logged-in users see dashboard.
+
+---
+
+### 🟦 Level 3 — *The Magic Key (Google OAuth2)* 🔑
+
+* Integrate Google Sign-In (OAuth2).
+* Backend verifies Google token, creates/links user, and issues your JWT.
+* Frontend shows a **“Sign in with Google”** button.
+
+---
+
+### 🟦 Level 4 — *The Treasure (External API)* 💎
+
+* After login, fetch data from GitHub API.
+* Display the user’s GitHub profile (username, avatar, repos).
+* (Optional hard mode 🐉: use GitHub OAuth to fetch private repos).
+
+---
+
+### 🟦 Level 5 — *The Fortress (Security Hardening)* 🏰
+
+* Add **helmet** and **rate limiting**.
+* Switch from `localStorage` → secure **httpOnly cookies**.
+* Understand token expiration (`JWT_EXPIRES_IN`) & refresh tokens.
+* Secure your API before deployment.
+
+---
+
+So in **Phase 2** there are **5 Levels total**.
+After this phase, you’ll have:
+✅ Local signup/login with JWT
+✅ Google login
+✅ Example of calling external APIs (GitHub)
+✅ A React frontend with protected routes
+✅ A hardened backend ready for production
+
+---
+
+👉 Do you want me to now start **Level 2 — React Auth setup**, the same step-by-step way we did Level 1?
