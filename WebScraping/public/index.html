@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+    <title>User Stats Dashboard</title>
+  </head>
+  <body>
+    <h1>User Stats Aggregator</h1>
+    <form id="scrapeForm">
+      <input name="leetcode" placeholder="LeetCode Username" required />
+      <input name="duolingo" placeholder="Duolingo Username" required />
+      <input name="github" placeholder="GitHub Username" required />
+      <button type="submit">Fetch Data</button>
+    </form>
+    <div id="results" class="results"></div>
+    <script>
+      function renderSection(title, data, site) {
+        // Handle error case
+        if (data.error) {
+          return `<div class="card error"><h2>${title}</h2><p>${data.error}</p></div>`;
+        }
+        // LeetCode card
+        if (site === "leetcode") {
+          return `
+          <div class="card">
+            <h2>LeetCode</h2>
+            <img src="${
+              data.profile?.userAvatar ||
+              "https://ui-avatars.com/api/?name=" + (data.username || "User")
+            }" alt="Avatar" class="avatar" />
+            <p><strong>Username:</strong> ${data.username || "N/A"}</p>
+            <p><strong>Ranking:</strong> ${data.profile?.ranking || "N/A"}</p>
+            <p><strong>Reputation:</strong> ${
+              data.profile?.reputation || "N/A"
+            }</p>
+            <p><strong>Accepted Submissions:</strong></p>
+            <p><strong>Real Name:</strong> ${
+              data.profile?.realName || "N/A"
+            }</p>
+<p><strong>Country:</strong> ${data.profile?.countryName || "N/A"}</p>
+<p><strong>School:</strong> ${data.profile?.school || "N/A"}</p>
+<p><strong>Badges:</strong> ${data.badges?.length || 0}</p>
+<p><strong>Join Date:</strong> ${data.profile?.joinDate || "N/A"}</p>
+<p><strong>Global Ranking:</strong> ${data.contests?.globalRanking || "N/A"}</p>
+            <ul>
+              ${
+                data.submitStats?.acSubmissionNum
+                  ? data.submitStats.acSubmissionNum
+                      .map((sub) => `<li>${sub.difficulty}: ${sub.count}</li>`)
+                      .join("")
+                  : "<li>N/A</li>"
+              }
+            </ul>
+          </div>
+        `;
+        }
+        // Duolingo card with avatar fallback and N/A values
+        if (site === "duolingo") {
+          return `
+          <div class="card">
+            <h2>Duolingo</h2>
+            <img src="${
+              data.avatar ||
+              "https://ui-avatars.com/api/?name=" + (data.username || "User")
+            }" alt="Avatar" class="avatar" />
+            <p><strong>Username:</strong> ${data.username || "N/A"}</p>
+            <p><strong>Streak:</strong> ${data.streak || "N/A"}</p>
+            <p><strong>XP:</strong> ${data.totalXp || "N/A"}</p>
+            <p><strong>Language:</strong> ${data.learningLanguage || "N/A"}</p>
+            <p><strong>Crowns:</strong> ${data.crowns || "N/A"}</p>
+<p><strong>Achievements:</strong> ${data.achievementCount || "N/A"}</p>
+<p><strong>Daily Goal XP:</strong> ${data.dailyGoal || "N/A"}</p>
+<p><strong>Bio:</strong> ${data.bio || "N/A"}</p>
+<p><strong>Created:</strong> ${data.created || "N/A"}</p>
+          </div>
+        `;
+        }
+        // GitHub card
+        if (site === "github") {
+          return `
+          <div class="card">
+            <h2>GitHub</h2>
+            <img src="${
+              data.avatar_url ||
+              "https://ui-avatars.com/api/?name=" + (data.login || "User")
+            }" alt="Avatar" class="avatar" />
+            <p><strong>Username:</strong> ${data.login || "N/A"}</p>
+            <p><strong>Name:</strong> ${data.name || "N/A"}</p>
+            <p><strong>Repos:</strong> ${data.public_repos || "N/A"}</p>
+            <p><strong>Followers:</strong> ${data.followers || "N/A"}</p>
+            <p><strong>Following:</strong> ${data.following || "N/A"}</p>
+            <p><strong>Bio:</strong> ${data.bio || 'N/A'}</p>
+<p><strong>Location:</strong> ${data.location || 'N/A'}</p>
+<p><strong>Company:</strong> ${data.company || 'N/A'}</p>
+<p><strong>Blog:</strong> <a href="${data.blog}" target="_blank">${data.blog}</a></p>
+<p><strong>Twitter:</strong> ${data.twitter_username ? '@' + data.twitter_username : 'N/A'}</p>
+<p><strong>Created:</strong> ${data.created_at ? data.created_at.substring(0,10) : 'N/A'}</p>
+            <a href="${data.html_url || "#"}" target="_blank">Profile</a>
+          </div>
+        `;
+        }
+        return "";
+      }
+
+      document.getElementById("scrapeForm").onsubmit = async function (e) {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(this).entries());
+        const res = await fetch("/scrape", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        const json = await res.json();
+        document.getElementById("results").innerHTML =
+          renderSection("LeetCode", json.leetcode, "leetcode") +
+          renderSection("Duolingo", json.duolingo, "duolingo") +
+          renderSection("GitHub", json.github, "github");
+      };
+    </script>
+  </body>
+</html>
