@@ -5,7 +5,13 @@ import { ENV } from "./config/envConfig.js"; // ✅ load env from config file
 import postRoutes from "./routes/postRoutes.js";
 
 const app = express();
-app.use(cors());
+// ✅ Allow requests from anywhere (or specify your frontend domain)
+app.use(cors({
+  origin: "*",  // Or e.g. "https://yourfrontend.vercel.app"
+  methods: ["GET", "POST"],
+  credentials: true,
+}));
+
 app.use(express.json());
 
 app.use("/api/posts", postRoutes);
